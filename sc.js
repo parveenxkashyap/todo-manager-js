@@ -1,49 +1,40 @@
-const form = document.getElementById("form");
-const input = document.getElementById("input");
-const todosList = document.getElementById("todos");
-const todos = JSON.parse(localStorage.getItem("todos"));
+function addTask() {
+    const taskInput = document.getElementById('taskInput');
+    const taskText = taskInput.value.trim();
 
-const updateLocalStorage = () => {
-  const todosElements = document.querySelectorAll("li");
-  const todos = [];
-  todosElements.forEach((todoElement) => {
-    todos.push({
-      text: todoElement.innerText,
-      completed: todoElement.classList.contains("completed"),
-    });
-  });
-  localStorage.setItem("todos", JSON.stringify(todos));
-};
-
-const addTodo = (todo) => {
-  let todoText = input.value;
-  if (todo) todoText = todo.text;
-  if (todoText) {
-    const todoElement = document.createElement("li");
-    if (todo && todo.completed) {
-      todoElement.classList.add("completed");
+    if (taskText === '') {
+        alert('Please enter a task');
+        return;
     }
-    todoElement.innerText = todoText;
-    todoElement.addEventListener("click", () => {
-      todoElement.classList.toggle("completed");
-      updateLocalStorage();
-    });
-    todoElement.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      todoElement.remove();
-      updateLocalStorage();
-    });
-    todosList.appendChild(todoElement);
-    input.value = "";
-    updateLocalStorage();
-  }
-};
 
-if (todos) {
-  todos.forEach((todo) => addTodo(todo));
+    const taskList = document.getElementById('taskList');
+    const listItem = document.createElement('li');
+
+    // Task text span
+    const taskSpan = document.createElement('span');
+    taskSpan.textContent = taskText;
+
+    // Complete button
+    const completeButton = document.createElement('button');
+    completeButton.innerHTML = '✔'; // Green checkmark icon
+    completeButton.onclick = () => {
+        taskSpan.classList.toggle('completed');
+    };
+
+    // Remove button
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'Remove';
+    removeButton.className = 'remove-btn';
+    removeButton.onclick = () => {
+        taskList.removeChild(listItem);
+    };
+
+    // Append everything
+    listItem.appendChild(completeButton);
+    listItem.appendChild(taskSpan);
+    listItem.appendChild(removeButton);
+
+    taskList.appendChild(listItem);
+
+    taskInput.value = ''; // Clear input field
 }
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  addTodo();
-});
